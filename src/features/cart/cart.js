@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-const findProductById = (items, name) => {
+const findProducByName = (items, name) => {
   return items.find(item => item.name === name); //working
 };
 
@@ -18,9 +18,10 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       //   state.cart = [...state.cart, action.payload];
-      const foundProduct = findProductById(state.cart, action.payload.name);
+      const foundProduct = findProducByName(state.cart, action.payload.name);
 
       if (foundProduct) {
+        // add quantity
         console.log('Product Found', JSON.stringify(foundProduct)); //working
 
         const updatedCart = state.cart.map(item =>
@@ -31,6 +32,7 @@ const cartSlice = createSlice({
         console.log('UPDATED CART', updatedCart);
         state.cart = updatedCart;
       } else {
+        // add to cart
         state.cart = [...state.cart, {...action.payload, quantity: 1}];
         // state.total += addsomeCodehereforPokemonPrice
       }
@@ -39,7 +41,26 @@ const cartSlice = createSlice({
       state.cart = [];
     },
     removeFromCart: (state, action) => {
-      state.cart = state.cart.filter(item => item.name !== action.payload.name);
+      const foundProduct = findProducByName(state.cart, action.payload.name);
+
+      if (foundProduct) {
+        if (foundProduct.quantity > 1) {
+          //Reduce Quantity
+          const updatedCart = state.cart.map(item =>
+            item.name === action.payload.name
+              ? {...item, quantity: item.quantity - 1}
+              : item,
+          );
+          state.cart = updatedCart;
+        } else {
+          //remove from cart
+          state.cart = state.cart.filter(
+            item => item.name !== action.payload.name,
+          );
+        }
+      } else {
+        console.log('not in cart');
+      }
     },
     setCartTotal: (state, action) => {
       state.cartTotal = action.payload;

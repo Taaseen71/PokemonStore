@@ -1,11 +1,12 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {PokemonItemCartType} from 'src/utils/definitions';
+import {addToCart, removeFromCart} from 'src/features/cart/cart';
 
 const Cart = () => {
   const cart = useSelector((state: any) => state.cart);
-
+  const dispatch = useDispatch();
   const renderedItem = ({item}: {item: PokemonItemCartType}) => {
     return (
       <View style={styles.container}>
@@ -13,6 +14,20 @@ const Cart = () => {
           Pokemon: {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
         </Text>
         <Text>Quantity:{item.quantity}</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Button
+            title={'+'}
+            onPress={() => {
+              dispatch(addToCart(item));
+            }}
+          />
+          <Button
+            title={'-'}
+            onPress={() => {
+              dispatch(removeFromCart(item));
+            }}
+          />
+        </View>
       </View>
     );
   };
